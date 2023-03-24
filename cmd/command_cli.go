@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/AdiKhoironHasan/bookservices/grpc/server"
-	"github.com/AdiKhoironHasan/bookservices/infrastructure/persistence"
+	"github.com/AdiKhoironHasan/bookservices-users/grpc/server"
+	"github.com/AdiKhoironHasan/bookservices-users/infrastructure/persistence"
 	"github.com/urfave/cli/v2"
 )
 

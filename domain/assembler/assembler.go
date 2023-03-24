@@ -1,8 +1,8 @@
 package assembler
 
 import (
-	"github.com/AdiKhoironHasan/bookservices/domain/entity"
-	protoUser "github.com/AdiKhoironHasan/bookservices/proto/user"
+	"github.com/AdiKhoironHasan/bookservices-users/domain/entity"
+	protoUser "github.com/AdiKhoironHasan/bookservices-users/proto/user"
 )
 
 func ToResponseUserList(Users []entity.User, ch chan<- []*protoUser.User) {

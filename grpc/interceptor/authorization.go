@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/AdiKhoironHasan/bookservices/grpc/contract"
+	"github.com/AdiKhoironHasan/bookservices-users/grpc/contract"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

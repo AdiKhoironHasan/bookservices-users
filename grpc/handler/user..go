@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/AdiKhoironHasan/bookservice-protobank/proto/book"
-	"github.com/AdiKhoironHasan/bookservices/domain/assembler"
-	"github.com/AdiKhoironHasan/bookservices/domain/entity"
-	"github.com/AdiKhoironHasan/bookservices/proto/user"
+	"github.com/AdiKhoironHasan/bookservices-users/domain/assembler"
+	"github.com/AdiKhoironHasan/bookservices-users/domain/entity"
+	"github.com/AdiKhoironHasan/bookservices-users/proto/user"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )

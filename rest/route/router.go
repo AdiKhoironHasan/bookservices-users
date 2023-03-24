@@ -1,10 +1,10 @@
 package route
 
 import (
-	"github.com/AdiKhoironHasan/bookservices/config"
-	"github.com/AdiKhoironHasan/bookservices/domain/service"
-	"github.com/AdiKhoironHasan/bookservices/grpc/client"
-	"github.com/AdiKhoironHasan/bookservices/rest/middleware"
+	"github.com/AdiKhoironHasan/bookservices-users/config"
+	"github.com/AdiKhoironHasan/bookservices-users/domain/service"
+	"github.com/AdiKhoironHasan/bookservices-users/grpc/client"
+	"github.com/AdiKhoironHasan/bookservices-users/rest/middleware"
 	"github.com/gin-gonic/gin"
 )
 

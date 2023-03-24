@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/AdiKhoironHasan/bookservices/config"
-	"github.com/AdiKhoironHasan/bookservices/domain/service"
-	"github.com/AdiKhoironHasan/bookservices/grpc/client"
-	"github.com/AdiKhoironHasan/bookservices/proto/user"
+	"github.com/AdiKhoironHasan/bookservices-users/config"
+	"github.com/AdiKhoironHasan/bookservices-users/domain/service"
+	"github.com/AdiKhoironHasan/bookservices-users/grpc/client"
+	"github.com/AdiKhoironHasan/bookservices-users/proto/user"
 )
 
 // Interface is an interface

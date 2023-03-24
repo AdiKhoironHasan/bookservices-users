@@ -1,6 +1,6 @@
-module github.com/AdiKhoironHasan/bookservices
+module github.com/AdiKhoironHasan/bookservices-users
 
-go 1.18
+go 1.20
 
 require (
 	github.com/AdiKhoironHasan/bookservice-protobank v1.1.6
