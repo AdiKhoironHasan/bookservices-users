@@ -32,25 +32,26 @@ func main() {
 
 	repo := service.NewDBService(db)
 
+	// grpc client
+	clientConnBook, errClient := client.NewGRPCConn_Book(conf)
+	if errClient != nil {
+		log.Fatalf("grpc client unable connect to server, %v", errClient)
+	}
+
+	grpcClient := client.NewGRPCClient(clientConnBook)
 	command := cmd.NewCommand(
 		cmd.WithConfig(conf),
 		cmd.WithRepo(repo),
+		cmd.WithGRPCClient(grpcClient),
 	)
 
 	app := cmd.NewCLI()
 	app.Commands = command.Build()
 
-	clientConn, errClient := client.NewGRPCConn(conf)
-	if errClient != nil {
-		log.Fatalf("grpc client unable connect to server, %v", errClient)
-	}
-
-	grpcClient := client.NewGRPCClient(clientConn)
 	app.Action = func(ctx *cli.Context) error {
 		router := route.NewRouter(
 			route.WithConfig(conf),
 			route.WithRepository(repo),
-			route.WithGRPCClient(grpcClient),
 		).Init()
 
 		shutdownTimeout := 10 * time.Second

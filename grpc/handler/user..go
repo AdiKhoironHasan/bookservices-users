@@ -5,28 +5,29 @@ import (
 	"errors"
 	"net/http"
 
-	protoUser "github.com/AdiKhoironHasan/bookservice-protobank/proto/user"
+	"github.com/AdiKhoironHasan/bookservice-protobank/proto/book"
+	"github.com/AdiKhoironHasan/bookservices/domain/assembler"
 	"github.com/AdiKhoironHasan/bookservices/domain/entity"
+	"github.com/AdiKhoironHasan/bookservices/proto/user"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
 
-func (c *Handler) Ping(ctx context.Context, _ *protoUser.PingReq) (*protoUser.PingRes, error) {
+func (c *Handler) Ping(ctx context.Context, _ *user.PingReq) (*user.PingRes, error) {
 	var now string
-	err := c.repo.DB.Raw("select now ()").Scan(&now).Error
+	err := c.repo.DB.WithContext(ctx).Raw("select now ()").Scan(&now).Error
 	if err != nil {
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
-	return &protoUser.PingRes{
+	return &user.PingRes{
 		Message: now,
 	}, nil
 }
 
-
 // List is a function
-func (c *Handler) List(ctx context.Context, userReq *protoUser.UserListReq) (*protoUser.UserListRes, error) {
-	Users := []entity.User{}
+func (c *Handler) List(ctx context.Context, userReq *user.UserListReq) (*user.UserListRes, error) {
+	users := []entity.User{}
 
 	rows, err := c.repo.DB.WithContext(ctx).Model(&entity.User{}).Where(&entity.User{
 		Name: userReq.Name,
@@ -40,33 +41,19 @@ func (c *Handler) List(ctx context.Context, userReq *protoUser.UserListReq) (*pr
 	for rows.Next() {
 		User := entity.User{}
 		rows.Scan(&User.ID, &User.Name, &User.Role, &User.CreatedAt, &User.UpdatedAt)
-		Users = append(Users, User)
+		users = append(users, User)
 	}
 
-	ch := make(chan []*protoUser.User)
+	ch := make(chan []*user.User)
 	defer close(ch)
+	go assembler.ToResponseUserList(users, ch)
 
-	go func(Users []entity.User, ch chan<- []*protoUser.User) {
-		value := []*protoUser.User{}
-		for _, val := range Users {
-			value = append(value, &protoUser.User{
-				Id:          val.ID,
-				Name:        val.Name,
-				Role:        val.Role,
-				CreatedAt:   val.CreatedAt.String(),
-				UpdatedAt:   val.UpdatedAt.String(),
-			})
-		}
-
-		ch <- value
-	}(Users, ch)
-
-	return &protoUser.UserListRes{
+	return &user.UserListRes{
 		Users: <-ch,
 	}, nil
 }
 
-func (c *Handler) Store(ctx context.Context, UserReq *protoUser.UserStoreReq) (*protoUser.UserStoreRes, error) {
+func (c *Handler) Store(ctx context.Context, UserReq *user.UserStoreReq) (*user.UserStoreRes, error) {
 	UserEntity := entity.User{
 		Name: UserReq.Name,
 		Role: UserReq.Role,
@@ -77,10 +64,10 @@ func (c *Handler) Store(ctx context.Context, UserReq *protoUser.UserStoreReq) (*
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
-	return &protoUser.UserStoreRes{}, nil
+	return &user.UserStoreRes{}, nil
 }
 
-func (c *Handler) Detail(ctx context.Context, UserReq *protoUser.UserDetailReq) (*protoUser.UserDetailRes, error) {
+func (c *Handler) Detail(ctx context.Context, UserReq *user.UserDetailReq) (*user.UserDetailRes, error) {
 	UserEntity := entity.User{}
 
 	err := c.repo.DB.WithContext(ctx).First(&UserEntity, UserReq.Id).Error
@@ -92,18 +79,18 @@ func (c *Handler) Detail(ctx context.Context, UserReq *protoUser.UserDetailReq) 
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
-	return &protoUser.UserDetailRes{
-		User: &protoUser.User{
-			Id:          UserEntity.ID,
-			Name:        UserEntity.Name,
-			Role:        UserEntity.Role,
-			CreatedAt:   UserEntity.CreatedAt.String(),
-			UpdatedAt:   UserEntity.UpdatedAt.String(),
+	return &user.UserDetailRes{
+		User: &user.User{
+			Id:        UserEntity.ID,
+			Name:      UserEntity.Name,
+			Role:      UserEntity.Role,
+			CreatedAt: UserEntity.CreatedAt.String(),
+			UpdatedAt: UserEntity.UpdatedAt.String(),
 		},
 	}, nil
 }
 
-func (c *Handler) Update(ctx context.Context, UserReq *protoUser.UserUpdateReq) (*protoUser.UserUpdateRes, error) {
+func (c *Handler) Update(ctx context.Context, UserReq *user.UserUpdateReq) (*user.UserUpdateRes, error) {
 	err := c.repo.DB.WithContext(ctx).First(&entity.User{}, UserReq.Id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -121,10 +108,10 @@ func (c *Handler) Update(ctx context.Context, UserReq *protoUser.UserUpdateReq) 
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
-	return &protoUser.UserUpdateRes{}, nil
+	return &user.UserUpdateRes{}, nil
 }
 
-func (c *Handler) Delete(ctx context.Context, UserReq *protoUser.UserDeleteReq) (*protoUser.UserDeleteRes, error) {
+func (c *Handler) Delete(ctx context.Context, UserReq *user.UserDeleteReq) (*user.UserDeleteRes, error) {
 	err := c.repo.DB.WithContext(ctx).First(&entity.User{}, UserReq.Id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -134,10 +121,17 @@ func (c *Handler) Delete(ctx context.Context, UserReq *protoUser.UserDeleteReq) 
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
+	_, err = c.grpcClient.Book.Delete(ctx, &book.BookDeleteReq{Id: UserReq.Id})
+	if err != nil {
+		if status.Code(err) != http.StatusNotFound {
+			return nil, err
+		}
+	}
+
 	err = c.repo.DB.WithContext(ctx).Delete(&entity.User{}, UserReq.Id).Error
 	if err != nil {
 		return nil, status.New(http.StatusInternalServerError, err.Error()).Err()
 	}
 
-	return &protoUser.UserDeleteRes{}, nil
+	return &user.UserDeleteRes{}, nil
 }

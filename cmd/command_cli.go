@@ -14,7 +14,11 @@ func (cmd *Command) newGRPCServer() *cli.Command {
 		Name:  "grpc:start",
 		Usage: "A command to run gRPC server",
 		Action: func(_ *cli.Context) error {
-			grpcServer := server.NewGRPCServer(cmd.conf, cmd.repo)
+			grpcServer := server.NewGRPCServer(
+				server.WithConfig(cmd.conf),
+				server.WithRepository(cmd.repo),
+				server.WithGRPCClient(cmd.grpcClient),
+			)
 			err := grpcServer.Run(cmd.conf.GRPCPort)
 			if err != nil {
 				return err

@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/AdiKhoironHasan/bookservices/config"
 	"github.com/AdiKhoironHasan/bookservices/domain/service"
+	"github.com/AdiKhoironHasan/bookservices/grpc/client"
 )
 
 // CommandOption is an option type
@@ -19,5 +20,12 @@ func WithConfig(conf *config.Config) CommandOption {
 func WithRepo(repo *service.Repositories) CommandOption {
 	return func(c *Command) {
 		c.repo = repo
+	}
+}
+
+// WithGRPCClient is function of command option
+func WithGRPCClient(gClient *client.GRPCClient) CommandOption {
+	return func(r *Command) {
+		r.grpcClient = gClient
 	}
 }

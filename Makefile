@@ -8,5 +8,8 @@ run-proto:
 run:
 	@go run main.go
 
+run-grpc:
+	@go run main.go grpc:start
+
 build:
 	@go build -ldflags="-X 'main.Version=${BUILD_VERSION}'" -v -a -installsuffix -o main .

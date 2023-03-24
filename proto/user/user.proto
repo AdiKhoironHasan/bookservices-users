@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+option go_package = "proto/user";
+
+package user;
+
+// User list
+message UserListReq {
+    string name = 1;
+    string role = 2;
+}
+message UserListRes {
+   repeated User Users = 1;
+}
+
+// User store
+message UserStoreReq {
+    string name = 1;
+    string role = 2;
+}
+message UserStoreRes {
+}
+
+// User detail
+message UserDetailReq {
+    int64 id = 1;
+}
+message UserDetailRes {
+    User User = 2;
+}
+
+// User update
+message UserUpdateReq {
+    int64 id = 1;
+    string name = 2;
+    string role = 3;
+}
+message UserUpdateRes {
+}
+
+// User delete
+message UserDeleteReq {
+    int64 id = 1;
+}
+message UserDeleteRes {
+}
+
+// ping
+message PingReq {
+}
+message PingRes {
+    string message = 1;
+}
+// user
+message User {
+    int64 id = 1;
+    string name = 2;
+    string role = 3;
+    string created_at = 4;
+    string updated_at = 5;
+}
+
+
+service UserService {
+    rpc Ping (PingReq) returns (PingRes) {}
+    rpc List(UserListReq) returns (UserListRes) {}
+    rpc Store(UserStoreReq) returns (UserStoreRes) {}
+    rpc Detail(UserDetailReq) returns (UserDetailRes) {}
+    rpc Update(UserUpdateReq) returns (UserUpdateRes) {}
+    rpc Delete(UserDeleteReq) returns (UserDeleteRes) {}
+}

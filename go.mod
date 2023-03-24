@@ -3,6 +3,7 @@ module github.com/AdiKhoironHasan/bookservices
 go 1.18
 
 require (
+	github.com/AdiKhoironHasan/bookservice-protobank v1.1.6
 	github.com/gin-gonic/gin v1.9.0
 	github.com/joho/godotenv v1.4.0
 	github.com/urfave/cli/v2 v2.24.4
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/AdiKhoironHasan/bookservice-protobank v1.0.8 // indirect
 	github.com/bytedance/sonic v1.8.3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

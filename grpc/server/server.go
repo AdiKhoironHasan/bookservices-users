@@ -3,10 +3,10 @@ package server
 import (
 	"github.com/AdiKhoironHasan/bookservices/config"
 	"github.com/AdiKhoironHasan/bookservices/domain/service"
+	"github.com/AdiKhoironHasan/bookservices/grpc/client"
 	"github.com/AdiKhoironHasan/bookservices/grpc/handler"
 	"github.com/AdiKhoironHasan/bookservices/grpc/interceptor"
-
-	protoUser "github.com/AdiKhoironHasan/bookservice-protobank/proto/user"
+	"github.com/AdiKhoironHasan/bookservices/proto/user"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,16 +14,22 @@ import (
 
 // Server is struct to hold any dependencies used for server
 type Server struct {
-	config *config.Config
-	repo   *service.Repositories
+	config     *config.Config
+	repo       *service.Repositories
+	grpcClient *client.GRPCClient
 }
 
+type ServerGrpcOption func(*Server)
+
 // NewGRPCServer is constructor
-func NewGRPCServer(conf *config.Config, repo *service.Repositories) *Server {
-	return &Server{
-		config: conf,
-		repo:   repo,
+func NewGRPCServer(options ...ServerGrpcOption) *Server {
+	server := &Server{}
+
+	for _, option := range options {
+		option(server)
 	}
+
+	return server
 }
 
 // Run is a method gRPC server
@@ -40,10 +46,10 @@ func (s *Server) Run(port int) error {
 		),
 	)
 
-	handlers := handler.NewHandler(s.config, s.repo)
+	handlers := handler.NewHandler(s.config, s.repo, s.grpcClient)
 
 	// register from proto
-	protoUser.RegisterUserServiceServer(server, handlers)
+	user.RegisterUserServiceServer(server, handlers)
 
 	// register reflection
 	reflection.Register(server)

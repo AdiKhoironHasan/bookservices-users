@@ -3,13 +3,15 @@ package cmd
 import (
 	"github.com/AdiKhoironHasan/bookservices/config"
 	"github.com/AdiKhoironHasan/bookservices/domain/service"
+	"github.com/AdiKhoironHasan/bookservices/grpc/client"
 	"github.com/urfave/cli/v2"
 )
 
 // Command is a struct
 type Command struct {
-	conf *config.Config
-	repo *service.Repositories
+	conf       *config.Config
+	repo       *service.Repositories
+	grpcClient *client.GRPCClient
 
 	CLI []*cli.Command
 }
