@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/AdiKhoironHasan/bookservices-users/grpc/contract"
+	"github.com/AdiKhoironHasan/bookservices-users/utils"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -25,7 +25,7 @@ func UnaryAuthClientInterceptor() grpc.UnaryClientInterceptor {
 
 		return invoker(func(t string) context.Context {
 			return metadata.AppendToOutgoingContext(ctx, "authorization", t)
-		}(clientAttach()), method, req, reply, cc, opts...)
+		}(clientServiceGRPCData()), method, req, reply, cc, opts...)
 	}
 }
 
@@ -90,6 +90,15 @@ func clientAttach() string {
 	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 }
 
+func clientServiceGRPCData() string {
+	var secretKey string
+	if val, exist := os.LookupEnv("APP_SECRET_KEY"); exist {
+		secretKey = val
+	}
+
+	return utils.GenerateHMACToken(secretKey)
+}
+
 // serverAuthorize is a private function to handle authorization
 func serverAuthorize(ctx context.Context) error {
 	m, valid := metadata.FromIncomingContext(ctx)
@@ -102,14 +111,10 @@ func serverAuthorize(ctx context.Context) error {
 		return status.Error(codes.Unauthenticated, "no token provided")
 	}
 
-	// fmt.Println("token : ", tokenAuth[0])
-
-	// s, _ := utils.DecodeBasicAuth(tokenAuth[0])
-
-	// fmt.Println("decode : ", s)
-
-	// TODO implement checking valid token
-	log.Printf("AUTH TOKEN: %s\n", tokenAuth)
+	IsValid := utils.ValidateToken(tokenAuth[0])
+	if !IsValid {
+		return status.Error(codes.Unauthenticated, "invalid token provided")
+	}
 
 	return nil
 }
