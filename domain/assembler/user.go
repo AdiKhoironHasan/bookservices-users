@@ -1,0 +1,23 @@
+package assembler
+
+import (
+	"github.com/AdiKhoironHasan/bookservices-users/domain/entity"
+	protoUser "github.com/AdiKhoironHasan/bookservices-users/proto/user"
+)
+
+func ToResponseUserList(Users []entity.User, ch chan<- []*protoUser.User) {
+	value := []*protoUser.User{}
+	for _, val := range Users {
+		value = append(value, &protoUser.User{
+			Id:        val.ID,
+			Name:      val.Name,
+			Email:     val.Email,
+			Password:  val.Password,
+			Role:      val.Role,
+			CreatedAt: val.CreatedAt.String(),
+			UpdatedAt: val.UpdatedAt.String(),
+		})
+	}
+
+	ch <- value
+}

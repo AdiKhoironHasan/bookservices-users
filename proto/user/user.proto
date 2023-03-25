@@ -16,7 +16,9 @@ message UserListRes {
 // User store
 message UserStoreReq {
     string name = 1;
-    string role = 2;
+    string email = 2;
+    string password = 3;
+    string role = 4;
 }
 message UserStoreRes {
 }
@@ -26,14 +28,16 @@ message UserDetailReq {
     int64 id = 1;
 }
 message UserDetailRes {
-    User User = 2;
+    User User = 1;
 }
 
 // User update
 message UserUpdateReq {
     int64 id = 1;
     string name = 2;
-    string role = 3;
+    string email = 3;
+    string password = 4;
+    string role = 5;
 }
 message UserUpdateRes {
 }
@@ -55,11 +59,21 @@ message PingRes {
 message User {
     int64 id = 1;
     string name = 2;
-    string role = 3;
-    string created_at = 4;
-    string updated_at = 5;
+    string email = 3;
+    string password = 4;
+    string role = 5;
+    string created_at = 6;
+    string updated_at = 7;
 }
 
+// user login
+message UserLoginReq {
+    string email = 1;
+    string password = 2;
+}
+message UserLoginRes {
+    User User = 1;
+}
 
 service UserService {
     rpc Ping (PingReq) returns (PingRes) {}
@@ -68,4 +82,5 @@ service UserService {
     rpc Detail(UserDetailReq) returns (UserDetailRes) {}
     rpc Update(UserUpdateReq) returns (UserUpdateRes) {}
     rpc Delete(UserDeleteReq) returns (UserDeleteRes) {}
+    rpc Login(UserLoginReq) returns (UserLoginRes) {}
 }

@@ -3,8 +3,9 @@ module github.com/AdiKhoironHasan/bookservices-users
 go 1.20
 
 require (
-	github.com/AdiKhoironHasan/bookservice-protobank v1.1.6
+	github.com/AdiKhoironHasan/bookservices-protobank v1.1.7
 	github.com/gin-gonic/gin v1.9.0
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.4.0
 	github.com/urfave/cli/v2 v2.24.4
 	google.golang.org/grpc v1.53.0
@@ -17,6 +18,7 @@ require (
 	github.com/bytedance/sonic v1.8.3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
